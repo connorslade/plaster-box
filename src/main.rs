@@ -39,7 +39,7 @@ fn main() {
 
         let name = req
             .header("Name")
-            .unwrap_or_else(|| "Untitled Bin".to_owned());
+            .unwrap_or_else(|| "Untitled Box".to_owned());
 
         let uuid = Uuid::new_v4();
         let bin = Bin {
@@ -70,7 +70,8 @@ fn main() {
         let template = fs::read_to_string("web/template/box.html")
             .unwrap()
             .replace("{{DATA}}", &safe_html(&data.data))
-            .replace("{{ID}}", &id);
+            .replace("{{NAME}}", &data.name)
+            .replace("{{ID}}", uuid.to_string().as_str());
 
         Response::new().text(template)
     });
@@ -97,8 +98,10 @@ fn main() {
                 break;
             }
 
-            out.push_str(&item.uuid.to_string());
-            out.push_str("<br>")
+            out.push_str(&format!(
+                r#"<tr><td>{}</td><td>{}</td></tr>"#,
+                item.name, item.uuid
+            ));
         }
 
         let template = fs::read_to_string("web/template/recent.html")

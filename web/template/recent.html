@@ -31,7 +31,7 @@
               New
             </a>
 
-            <a class="navbar-item">
+            <a class="navbar-item" href="/recent">
               Recent
             </a>
           </div>
@@ -39,7 +39,18 @@
       </nav>
 
       <br />
-      <div style="border-radius: 4px;">
+      <div class="box">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{DATA}}
+          </tbody>
+        </table>
       </div>
     </div>
   </body>

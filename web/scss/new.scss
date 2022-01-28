@@ -25,7 +25,16 @@
   top: 10px;
   right: 10px;
   z-index: 30;
-  transition: all 1s ease-in-out;  
+  transition: all 1s ease-in-out;
   transform: translateX(130px);
   opacity: 0;
+}
+
+.title {
+  display: inline;
+}
+
+.button-bar {
+  float: right;
+  margin-left: 5px;
 }

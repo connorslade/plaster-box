@@ -6,14 +6,14 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/css/new.css" />
-    <script src="/new/index.js"></script>
+    <script src="/box/index.js"></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
     ></script>
   </head>
   <body>
-    <div class="container">
+    <div class="container" x-data="data">
       <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
@@ -31,7 +31,7 @@
               New
             </a>
 
-            <a class="navbar-item">
+            <a class="navbar-item" href="/recent">
               Recent
             </a>
           </div>
@@ -39,17 +39,18 @@
       </nav>
 
       <br />
-      <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-          <li><a href="/recent">b</a></li>
-          <li class="is-active">
-            <a href="#" aria-current="page">{{ID}}</a>
-          </li>
-        </ul>
-      </nav>
-      <pre style="border-radius: 4px;">
-{{DATA}}
-      </pre>
+      <h3 class="title is-3">{{NAME}}</h3>
+      <button class="button-bar button is-link is-light" @click="rawRedirect()">
+        Raw
+      </button>
+      <button class="button-bar button is-primary is-light" @click="copy()">
+        Copy
+      </button>
+
+      <p>{{ID}}</p>
+      <br />
+
+      <pre class="box" id="data">{{DATA}}</pre>
     </div>
   </body>
 </html>
