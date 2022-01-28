@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>PlasterBox — New</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/new.css" />
+    <script src="/new/index.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <p>📦 <strong>PlasterBox</strong></p>
+          </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item">
+              Home
+            </a>
+
+            <a class="navbar-item" href="/new">
+              New
+            </a>
+
+            <a class="navbar-item">
+              Recent
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <br />
+      <form x-data="data" id="form" class="box">
+        <div class="control">
+          <textarea
+            class="text input"
+            name="text"
+            required
+            autofocus
+          ></textarea>
+        </div>
+        <br />
+        <button
+          @click="$el.classList.add('is-loading'); submit();"
+          class="button is-primary"
+          type="button"
+        >
+          Save
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

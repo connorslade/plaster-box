@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>PlasterBox — {{ID}}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/new.css" />
+    <script src="/new/index.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <p>📦 <strong>PlasterBox</strong></p>
+          </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item">
+              Home
+            </a>
+
+            <a class="navbar-item" href="/new">
+              New
+            </a>
+
+            <a class="navbar-item">
+              Recent
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <br />
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/recent">b</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">{{ID}}</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="input">
+        {{DATA}}
+      </div>
+    </div>
+  </body>
+</html>
