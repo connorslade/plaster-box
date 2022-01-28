@@ -17,7 +17,7 @@
       <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
-            <p>📦 <strong>PlasterBox</strong></p>
+            <p><span class="logo">📦</span> <strong>PlasterBox</strong></p>
           </a>
         </div>
 
@@ -41,8 +41,16 @@
       <br />
       <form x-data="data" id="form" class="box">
         <div class="control">
+          <input
+            class="input title-input"
+            type="text"
+            name="name"
+            placeholder="Title"
+          />
           <textarea
-            class="text input"
+            @keyup.ctrl.enter=" submit();"
+            placeholder="Text..."
+            class="text-input input"
             name="text"
             required
             autofocus
@@ -50,13 +58,22 @@
         </div>
         <br />
         <button
-          @click="$el.classList.add('is-loading'); submit();"
+          @click="submit();"
           class="button is-primary"
           type="button"
+          id="submit"
         >
           Save
         </button>
       </form>
     </div>
+
+    <article class="message is-danger" id="message">
+      <div class="message-header">
+        <p>Danger</p>
+        <button class="delete" aria-label="delete"></button>
+      </div>
+      <div class="message-body">Error <strong>500</strong></div>
+    </article>
   </body>
 </html>

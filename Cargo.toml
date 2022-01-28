@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 afire = { version = "0.3.0", features = ["serve_static", "logging"] }
+uuid = { version = "0.8.2", features = ["v4"] }
 lazy_static = "1.4.0"
 mut_static = "5.0.0"
-uuid = { version = "0.8.2", features = ["v4"] }
+chrono = "0.4.19"
