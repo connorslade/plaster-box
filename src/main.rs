@@ -4,7 +4,7 @@ use std::process;
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use afire::{Content, Logger, Method, Middleware, Response, ServeStatic, Server};
+use afire::{Content, Header, Logger, Method, Middleware, Response, ServeStatic, Server};
 use bincode;
 use ctrlc;
 use mut_static::MutStatic;
@@ -40,6 +40,8 @@ lazy_static! {
 }
 
 fn main() {
+    lazy_static::initialize(&DATA);
+
     let mut server = Server::new("localhost", 3030);
 
     ServeStatic::new("web/static").attach(&mut server);
@@ -60,6 +62,14 @@ fn main() {
         process::exit(0);
     })
     .unwrap();
+
+    server.route(Method::GET, "/", |_| {
+        Response::new()
+            .status(308)
+            .text(r#"<a href="/new">/new</a>"#)
+            .header(Header::new("Location", "/new"))
+            .content(Content::HTML)
+    });
 
     server.route(Method::POST, "/new", |req| {
         if req.body.len() > DATA_LIMIT {
@@ -129,11 +139,7 @@ fn main() {
         let data = DATA.read().unwrap();
         let mut out = String::new();
 
-        for (i, item) in (&*data).iter().rev().take(50).enumerate() {
-            if i > 15 {
-                break;
-            }
-
+        for item in (&*data).iter().rev().take(50) {
             let mut name = item.name.as_str();
 
             if name.len() > 50 {
@@ -178,6 +184,7 @@ impl Bin {
 
         let raw = fs::read(file).ok()?;
         let data: Vec<Self> = bincode::deserialize(&raw).ok()?;
+        println!("[*] Loaded {} Item", data.len());
 
         Some(data)
     }
