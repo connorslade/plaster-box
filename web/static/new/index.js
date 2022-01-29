@@ -9,8 +9,11 @@ let data = {
       body: data.text.value,
       headers: { Name: data.name.value || "Unnamed Box" },
     })
-      .then((d) => d.text())
-      .then((d) => (window.location.pathname = `/b/${d}`))
+      .then(async (d) => {
+        const text = await d.text();
+        if (d.ok) window.location.pathname = `/b/${text}`;
+        else err(text);
+      })
       .catch(err);
   },
 };

@@ -73,12 +73,12 @@ fn main() {
 
     server.route(Method::POST, "/new", |req| {
         if req.body.len() > DATA_LIMIT {
-            return Response::new().text("Data too big!");
+            return Response::new().status(400).text("Data too big!");
         }
 
         let body_str = match req.body_string() {
             Some(i) => i,
-            None => return Response::new().text("Invalid Text"),
+            None => return Response::new().status(400).text("Invalid Text"),
         };
 
         let name = req
