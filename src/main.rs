@@ -2,7 +2,6 @@ use std::fs;
 use std::time::Instant;
 
 use afire::{Content, Logger, Method, Middleware, Response, ServeStatic, Server};
-use chrono::prelude::*;
 use mut_static::MutStatic;
 use uuid::Uuid;
 #[macro_use]
