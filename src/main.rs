@@ -13,6 +13,8 @@ use uuid::Uuid;
 #[macro_use]
 extern crate lazy_static;
 
+mod footer;
+
 const DATA_LIMIT: usize = 256_000;
 const SAVE_INTERVAL: u64 = 60 * 60;
 const SAVE_FILE: &str = "data.db";
@@ -44,6 +46,7 @@ fn main() {
 
     let mut server = Server::new("localhost", 3030);
 
+    footer::Footer.attach(&mut server);
     ServeStatic::new("web/static").attach(&mut server);
     Logger::new().attach(&mut server);
 
