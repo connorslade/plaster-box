@@ -99,8 +99,9 @@ fn main() {
             }
 
             out.push_str(&format!(
-                r#"<tr><td>{}</td><td>{}</td></tr>"#,
-                item.name, item.uuid
+                r#"<tr id="{id}"><td>{name}</td><td>{id}</td></tr>"#,
+                name = item.name,
+                id = item.uuid
             ));
         }
 

@@ -19,20 +19,12 @@ window.addEventListener("load", () => {
   const textBox = document.querySelector(".text-input");
   textBox.value = localStorage.getItem("text");
 
-  textBox.setAttribute(
-    "style",
-    "height:" + tx[i].scrollHeight + "px;overflow-y:hidden;"
-  );
-  textBox.addEventListener(
-    "input",
-    () => {
-      this.style.height = "auto";
-      this.style.height = this.scrollHeight + "px";
-    },
-    false
-  );
+  textBox.style.height = `${textBox.scrollHeight}px`;
+  textBox.style.overflowY = "hidden";
 
   textBox.addEventListener("input", (e) => {
     localStorage.setItem("text", e.target.value);
+    textBox.style.height = "auto";
+    textBox.style.height = textBox.scrollHeight + "px";
   });
 });
