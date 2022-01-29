@@ -15,6 +15,17 @@ let data = {
   },
 };
 
+function err(e) {
+  document.querySelector("#submit").classList.remove("is-loading");
+  bulmaToast.toast({
+    message: e.toString(),
+    duration: 10000,
+    type: "is-danger",
+    dismissible: true,
+    animate: { in: "fadeIn", out: "fadeOut" },
+  });
+}
+
 window.addEventListener("load", () => {
   const textBox = document.querySelector(".text-input");
   textBox.value = localStorage.getItem("text");
