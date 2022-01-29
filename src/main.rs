@@ -1,13 +1,21 @@
 use std::fs;
-use std::time::Instant;
+use std::path::PathBuf;
+use std::process;
+use std::thread;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use afire::{Content, Logger, Method, Middleware, Response, ServeStatic, Server};
+use bincode;
+use ctrlc;
 use mut_static::MutStatic;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 #[macro_use]
 extern crate lazy_static;
 
 const DATA_LIMIT: usize = 256_000;
+const SAVE_INTERVAL: u64 = 60 * 60;
+const SAVE_FILE: &str = "data.db";
 
 const TIME_UNITS: &[(&str, u16)] = &[
     ("second", 60),
@@ -18,16 +26,17 @@ const TIME_UNITS: &[(&str, u16)] = &[
     ("year", 0),
 ];
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Bin {
-    uuid: Uuid,
+    uuid: [u8; 16],
     data: String,
     name: String,
-    time: Instant,
+    time: u64,
 }
 
 lazy_static! {
-    pub static ref DATA: MutStatic<Vec<Bin>> = MutStatic::from(Vec::new());
+    pub static ref DATA: MutStatic<Vec<Bin>> =
+        MutStatic::from(Bin::load(PathBuf::from(SAVE_FILE)).unwrap());
 }
 
 fn main() {
@@ -35,6 +44,22 @@ fn main() {
 
     ServeStatic::new("web/static").attach(&mut server);
     Logger::new().attach(&mut server);
+
+    thread::Builder::new()
+        .name("Saver".to_string())
+        .spawn(|| {
+            thread::sleep(Duration::from_secs(SAVE_INTERVAL));
+            println!("[*] Saveing");
+            Bin::save(&*DATA.read().unwrap(), PathBuf::from(SAVE_FILE)).unwrap();
+        })
+        .unwrap();
+
+    ctrlc::set_handler(|| {
+        println!("[*] Saveing");
+        Bin::save(&*DATA.read().unwrap(), PathBuf::from(SAVE_FILE)).unwrap();
+        process::exit(0);
+    })
+    .unwrap();
 
     server.route(Method::POST, "/new", |req| {
         if req.body.len() > DATA_LIMIT {
@@ -52,16 +77,16 @@ fn main() {
 
         let uuid = Uuid::new_v4();
         let bin = Bin {
-            uuid,
+            uuid: *uuid.as_bytes(),
             name,
             data: body_str,
-            time: Instant::now(),
+            time: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
         };
 
-        dbg!(&bin);
-
         DATA.write().unwrap().push(bin);
-        dbg!(&*DATA.read().unwrap());
 
         Response::new().text(uuid)
     });
@@ -70,10 +95,10 @@ fn main() {
         let id = req.path_param("id").unwrap();
         let data = DATA.read().unwrap();
 
-        let uuid = &Uuid::parse_str(&id).unwrap();
-        let data = match data.iter().find(|x| x.uuid == *uuid) {
+        let uuid = &Uuid::parse_str(&id).expect("Invalid UUID");
+        let data = match data.iter().find(|x| x.uuid == *uuid.as_bytes()) {
             Some(i) => i,
-            None => return Response::new().status(404),
+            None => return Response::new().status(404).text("Bin not Found"),
         };
 
         let template = fs::read_to_string("web/template/box.html")
@@ -89,10 +114,10 @@ fn main() {
         let id = req.path_param("id").unwrap();
         let data = DATA.read().unwrap();
 
-        let uuid = &Uuid::parse_str(&id).unwrap();
-        let data = match data.iter().find(|x| x.uuid == *uuid) {
+        let uuid = &Uuid::parse_str(&id).expect("Invalid UUID");
+        let data = match data.iter().find(|x| x.uuid == *uuid.as_bytes()) {
             Some(i) => i,
-            None => return Response::new().status(404),
+            None => return Response::new().status(404).text("Bin not Found"),
         };
 
         Response::new()
@@ -115,10 +140,15 @@ fn main() {
                 name = &name[..50];
             }
 
+            let current_time = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("Time went backwards!")
+                .as_secs();
+
             out.push_str(&format!(
                 r#"<tr id="{id}"><td>{name}</td><td>{id}</td><td>{date}</td></tr>"#,
-                id = item.uuid,
-                date = best_time(item.time.elapsed().as_secs())
+                id = Uuid::from_slice(&item.uuid).unwrap(),
+                date = best_time(current_time - item.time)
             ));
         }
 
@@ -130,6 +160,27 @@ fn main() {
     });
 
     server.start().unwrap();
+}
+
+impl Bin {
+    fn save(inp: &Vec<Self>, file: PathBuf) -> Option<()> {
+        let bin = bincode::serialize(&inp).ok()?;
+
+        fs::write(file, bin).ok()?;
+
+        Some(())
+    }
+
+    fn load(file: PathBuf) -> Option<Vec<Self>> {
+        if !file.exists() {
+            return Some(Vec::new());
+        }
+
+        let raw = fs::read(file).ok()?;
+        let data: Vec<Self> = bincode::deserialize(&raw).ok()?;
+
+        Some(data)
+    }
 }
 
 fn safe_html(html: &str) -> String {
