@@ -44,7 +44,13 @@ lazy_static! {
 fn main() {
     lazy_static::initialize(&DATA);
 
-    let mut server = Server::new("localhost", 3030);
+    let mut server = Server::new("localhost", 3030)
+        // Set defult headers
+        .default_header(Header::new("X-Content-Type-Options", "nosniff"))
+        .default_header(Header::new("X-Frame-Options", "DENY"))
+        // Set other things
+        .default_header(Header::new("X-Server", format!("afire/{}", afire::VERSION)))
+        .socket_timeout(Duration::from_secs(5));
 
     footer::Footer.attach(&mut server);
     ServeStatic::new("web/static").attach(&mut server);
@@ -120,7 +126,7 @@ fn main() {
             .replace("{{NAME}}", &data.name)
             .replace("{{ID}}", uuid.to_string().as_str());
 
-        Response::new().text(template)
+        Response::new().text(template).content(Content::HTML)
     });
 
     server.route(Method::GET, "/raw/{id}", |req| {
