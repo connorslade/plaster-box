@@ -2,6 +2,12 @@ let data = {
   submit: () => {
     document.querySelector("#submit").classList.add("is-loading");
     let data = document.querySelector("#form").elements;
+
+    if (data.text.value === "") {
+      err("No Body", 3000);
+      return;
+    }
+
     localStorage.removeItem("text");
 
     fetch("/new", {
@@ -18,11 +24,11 @@ let data = {
   },
 };
 
-function err(e) {
+function err(e, time) {
   document.querySelector("#submit").classList.remove("is-loading");
   bulmaToast.toast({
     message: e.toString(),
-    duration: 10000,
+    duration: time || 5000,
     type: "is-danger",
     dismissible: true,
     animate: { in: "fadeIn", out: "fadeOut" },

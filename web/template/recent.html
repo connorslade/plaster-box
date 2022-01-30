@@ -5,9 +5,23 @@
     <title>PlasterBox — Recent</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
     <link rel="stylesheet" href="/css/recent.css" />
     <script src="/new/index.js"></script>
     <script
@@ -51,14 +65,20 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>ID</th>
-              <th>Date</th>
+              <th width="350px">ID</th>
+              <th width="150px">Date</th>
             </tr>
           </thead>
           <tbody>
             {{DATA}}
           </tbody>
         </table>
+
+        <nav class="pagination" role="navigation" aria-label="pagination">
+          <ul class="pagination-list">
+            {{PAGES}}
+          </ul>
+        </nav>
       </div>
     </div>
 

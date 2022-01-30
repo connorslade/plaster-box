@@ -18,6 +18,7 @@ mod footer;
 const DATA_LIMIT: usize = 256_000;
 const SAVE_INTERVAL: u64 = 60 * 60;
 const SAVE_FILE: &str = "data.db";
+const RECENT_PAGE_ITEMS: usize = 25;
 
 const TIME_UNITS: &[(&str, u16)] = &[
     ("second", 60),
@@ -144,11 +145,32 @@ fn main() {
             .content(Content::Custom("text/plain; charset=UTF-8"))
     });
 
-    server.route(Method::GET, "/recent", |_| {
+    server.route(Method::GET, "/recent", |req| {
         let data = DATA.read().unwrap();
+        let mut pages = String::new();
         let mut out = String::new();
+        let mut page = 0;
 
-        for item in (&*data).iter().rev().take(50) {
+        if let Some(i) = req.query.get("page") {
+            page = match i.parse::<usize>() {
+                Ok(i) => i,
+                Err(_) => 0,
+            };
+        }
+
+        for (i, _item) in data.iter().step_by(RECENT_PAGE_ITEMS).enumerate() {
+            pages.push_str(&format!(
+                r#"<li><a class="pagination-link{}" aria-label="Goto page {i}" href="?page={i}">{i}</a></li>"#,
+                if i == page { " is-current" } else { "" },
+            ));
+        }
+
+        for item in (&*data)
+            .iter()
+            .rev()
+            .skip(RECENT_PAGE_ITEMS * page)
+            .take(RECENT_PAGE_ITEMS)
+        {
             let mut name = item.name.as_str();
 
             if name.len() > 50 {
@@ -161,7 +183,7 @@ fn main() {
                 .as_secs();
 
             out.push_str(&format!(
-                r#"<tr id="{id}"><td>{name}</td><td>{id}</td><td>{date}</td></tr>"#,
+                r#"<tr id="{id}"><td>{name}</td><td>{id}</td><td>{date} ago</td></tr>"#,
                 id = Uuid::from_slice(&item.uuid).unwrap(),
                 date = best_time(current_time - item.time)
             ));
@@ -169,6 +191,7 @@ fn main() {
 
         let template = fs::read_to_string("web/template/recent.html")
             .unwrap()
+            .replace("{{PAGES}}", &pages)
             .replace("{{DATA}}", &out);
 
         Response::new().text(template).content(Content::HTML)
