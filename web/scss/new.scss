@@ -45,6 +45,27 @@
   width: 100%;
 }
 
+code {
+  &:before {
+    content: counter(line) " ";
+    user-select: none;
+    margin-right: 10px;
+    color: #4a4a4a82;
+    text-align: right;
+    border-right: 1px solid;
+    width: 41px;
+    display: inline-block;
+  }
+
+  &:first-of-type::before {
+    border-top-right-radius: 4px;
+  }
+
+  &:last-of-type::before {
+    border-bottom-right-radius: 4px;
+  }
+}
+
 .button-bar {
   float: right;
   margin-left: 5px;
@@ -60,4 +81,13 @@
   width: 100%;
   padding: 10px;
   margin: 0;
+}
+
+pre {
+  counter-reset: line;
+}
+
+code {
+  counter-increment: line;
+  display: block;
 }

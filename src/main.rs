@@ -121,9 +121,15 @@ fn main() {
             None => return Response::new().status(404).text("Bin not Found"),
         };
 
+        let mut code_blocks = String::new();
+
+        for i in safe_html(&data.data).lines() {
+            code_blocks.push_str(&format!("<code>{}</code>", i));
+        }
+
         let template = fs::read_to_string("web/template/box.html")
             .unwrap()
-            .replace("{{DATA}}", &safe_html(&data.data))
+            .replace("{{DATA}}", &code_blocks)
             .replace("{{NAME}}", &data.name)
             .replace("{{ID}}", uuid.to_string().as_str());
 

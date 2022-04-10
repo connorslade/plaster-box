@@ -13,7 +13,10 @@ let data = {
     fetch("/new", {
       method: "post",
       body: data.text.value,
-      headers: { Name: data.name.value || "Unnamed Box" },
+      headers: {
+        Name: data.name.value || "Unnamed Box",
+        "Content-Type": "text/plain; charset=UTF-16",
+      },
     })
       .then(async (d) => {
         const text = await d.text();
