@@ -12,7 +12,7 @@ lazy_static! {
 pub struct Footer;
 
 impl Middleware for Footer {
-    fn post(&mut self, _req: Request, res: Response) -> MiddleResponse {
+    fn post(&self, _req: Request, res: Response) -> MiddleResponse {
         let text = match String::from_utf8(res.data.clone()) {
             Ok(i) => i,
             Err(_) => return MiddleResponse::Continue,

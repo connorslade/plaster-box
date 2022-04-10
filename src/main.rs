@@ -4,7 +4,7 @@ use std::process;
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use afire::{Content, Header, Logger, Method, Middleware, Response, ServeStatic, Server};
+use afire::{Content, Logger, Method, Middleware, Response, ServeStatic, Server};
 use bincode;
 use ctrlc;
 use mut_static::MutStatic;
@@ -47,10 +47,10 @@ fn main() {
 
     let mut server = Server::new("localhost", 3030)
         // Set defult headers
-        .default_header(Header::new("X-Content-Type-Options", "nosniff"))
-        .default_header(Header::new("X-Frame-Options", "DENY"))
+        .default_header("X-Content-Type-Options", "nosniff")
+        .default_header("X-Frame-Options", "DENY")
         // Set other things
-        .default_header(Header::new("X-Server", format!("afire/{}", afire::VERSION)))
+        .default_header("X-Server", format!("afire/{}", afire::VERSION))
         .socket_timeout(Duration::from_secs(5));
 
     footer::Footer.attach(&mut server);
@@ -77,7 +77,7 @@ fn main() {
         Response::new()
             .status(308)
             .text(r#"<a href="/new">/new</a>"#)
-            .header(Header::new("Location", "/new"))
+            .header("Location", "/new")
             .content(Content::HTML)
     });
 
