@@ -5,8 +5,6 @@ use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use afire::{Content, Logger, Method, Middleware, Response, ServeStatic, Server};
-use bincode;
-use ctrlc;
 use mut_static::MutStatic;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -158,10 +156,7 @@ fn main() {
         let mut page = 0;
 
         if let Some(i) = req.query.get("page") {
-            page = match i.parse::<usize>() {
-                Ok(i) => i,
-                Err(_) => 0,
-            };
+            page = i.parse::<usize>().unwrap_or(0);
         }
 
         for (i, _item) in data.iter().step_by(RECENT_PAGE_ITEMS).enumerate() {
@@ -207,7 +202,7 @@ fn main() {
 }
 
 impl Bin {
-    fn save(inp: &Vec<Self>, file: PathBuf) -> Option<()> {
+    fn save(inp: &[Self], file: PathBuf) -> Option<()> {
         let bin = bincode::serialize(&inp).ok()?;
 
         fs::write(file, bin).ok()?;
