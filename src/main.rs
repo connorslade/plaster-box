@@ -130,7 +130,7 @@ fn main() {
         let template = fs::read_to_string("web/template/box.html")
             .unwrap()
             .replace("{{DATA}}", &code_blocks)
-            .replace("{{NAME}}", &data.name)
+            .replace("{{NAME}}", &safe_html(&data.name))
             .replace("{{ID}}", uuid.to_string().as_str());
 
         Response::new().text(template).content(Content::HTML)
@@ -177,10 +177,10 @@ fn main() {
             .skip(RECENT_PAGE_ITEMS * page)
             .take(RECENT_PAGE_ITEMS)
         {
-            let mut name = item.name.as_str();
+            let mut name = safe_html(item.name.as_str());
 
             if name.len() > 50 {
-                name = &name[..50];
+                name = name[..50].to_owned();
             }
 
             let current_time = SystemTime::now()
