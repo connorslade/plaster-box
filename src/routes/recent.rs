@@ -3,6 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use afire::{Content, Method, Response, Server};
 use rusqlite::params;
+use unidecode::unidecode;
 use uuid::Uuid;
 
 use crate::{
@@ -36,9 +37,9 @@ pub fn attach(server: &mut Server<App>) {
         while let Some(i) = bins.next().unwrap() {
             let uuid = i.get::<_, String>(0).unwrap();
             let time = i.get::<_, u64>(2).unwrap();
-            let mut name = safe_html(&i.get::<_, String>(1).unwrap());
+            let mut name = safe_html(&unidecode(&i.get::<_, String>(1).unwrap()));
             if name.len() > 50 {
-                name = name[..50].to_owned();
+                name = name.chars().take(50).collect();
             }
 
             let current_time = SystemTime::now()

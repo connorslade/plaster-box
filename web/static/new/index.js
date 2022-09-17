@@ -14,7 +14,7 @@ let data = {
       method: "post",
       body: data.text.value,
       headers: {
-        Name: data.name.value || "Unnamed Box",
+        Name: encodeURIComponent(data.name.value ?? "Unnamed Box"),
         "Content-Type": "text/plain; charset=UTF-16",
       },
     })

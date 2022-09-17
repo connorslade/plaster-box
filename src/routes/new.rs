@@ -1,5 +1,6 @@
 use afire::{Content, Method, Response, Server};
 use rusqlite::params;
+use urlencoding::decode;
 use uuid::Uuid;
 
 use crate::App;
@@ -15,9 +16,10 @@ pub fn attach(server: &mut Server<App>) {
             None => return Response::new().status(400).text("Invalid Text"),
         };
 
-        let name = req
-            .header("Name")
-            .unwrap_or_else(|| "Untitled Box".to_owned());
+        let name = match req.header("Name") {
+            Some(i) => decode(&i).unwrap().to_string(),
+            None => "Untitled Box".to_owned(),
+        };
         let uuid = Uuid::new_v4();
 
         app.database

@@ -14,3 +14,5 @@ ctrlc = "3.2.1"
 simple_config_parser = "1.0.0"
 rusqlite = { version = "0.28.0", features = ["bundled"] }
 parking_lot = "0.12.1"
+urlencoding = "2.1.2"
+unidecode = "0.3.0"
