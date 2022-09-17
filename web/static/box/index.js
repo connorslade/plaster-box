@@ -4,8 +4,8 @@ let data = {
     window.location.pathname = `/raw/${id}`;
   },
   copy: () => {
-    let data = document.querySelector("#data").innerHTML;
+    let data = document.querySelector("#data").innerText;
     data = data.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    navigator.clipboard.writeText(data).then(() => {});
+    navigator.clipboard.writeText(data);
   },
 };
