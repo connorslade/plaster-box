@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-afire = { version = "1.2.0", features = ["extensions", "tracing"] }
+# afire = { version = "1.2.0", features = ["extensions", "tracing"] }
+afire = { git = "https://github.com/Basicprogrammer10/afire", branch = "dev", features = [
+    "extensions",
+] }
 serde = { version = "1.0.136", features = ["derive"] }
 uuid = { version = "0.8.2", features = ["v4"] }
 lazy_static = "1.4.0"

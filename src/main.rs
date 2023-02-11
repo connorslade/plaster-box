@@ -3,6 +3,8 @@ use std::time::Duration;
 
 use afire::{
     extension::{Logger, ServeStatic},
+    trace,
+    trace::{set_log_level, Level},
     Middleware, Server,
 };
 
@@ -13,12 +15,14 @@ mod routes;
 use app::App;
 
 fn main() {
+    set_log_level(Level::Trace);
     let app = App::new();
 
-    let mut server = Server::<App>::new(&app.config.host, app.config.port)
+    let threads = app.config.threads;
+    let mut server = Server::<App>::new(app.config.host.as_str(), app.config.port)
         // Set server state
         .state(app)
-        // Set defult headers
+        // Set default headers
         .default_header("X-Content-Type-Options", "nosniff")
         .default_header("X-Frame-Options", "DENY")
         // Set other things
@@ -27,6 +31,7 @@ fn main() {
 
     let error_app = server.state.as_ref().unwrap().clone();
     ctrlc::set_handler(move || {
+        trace!("Saving database");
         error_app
             .database
             .lock()
@@ -40,5 +45,5 @@ fn main() {
     Logger::new().attach(&mut server);
     routes::attach(&mut server);
 
-    server.start().unwrap();
+    server.start_threaded(threads).unwrap();
 }

@@ -11,13 +11,9 @@ pub fn attach(server: &mut Server<App>) {
             return Response::new().status(400).text("Data too big!");
         }
 
-        let body_str = match req.body_string() {
-            Some(i) => i,
-            None => return Response::new().status(400).text("Invalid Text"),
-        };
-
-        let name = match req.header("Name") {
-            Some(i) => decode(&i).unwrap().to_string(),
+        let body_str = String::from_utf8_lossy(&req.body);
+        let name = match req.headers.get("Name") {
+            Some(i) => decode(i).unwrap().to_string(),
             None => "Untitled Box".to_owned(),
         };
         let uuid = Uuid::new_v4();

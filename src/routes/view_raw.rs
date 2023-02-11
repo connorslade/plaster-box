@@ -6,7 +6,7 @@ use crate::App;
 
 pub fn attach(server: &mut Server<App>) {
     server.stateful_route(Method::GET, "/raw/{id}", |app, req| {
-        let id = req.path_param("id").unwrap();
+        let id = req.param("id").unwrap();
 
         let uuid = match Uuid::parse_str(&id) {
             Ok(i) => i,
@@ -28,6 +28,9 @@ pub fn attach(server: &mut Server<App>) {
             Err(e) => panic!("{}", e),
         };
 
-        Response::new().text(data).content(Content::TXT)
+        Response::new()
+            .text(data)
+            .header("Access-Control-Allow-Origin", "*")
+            .content(Content::TXT)
     });
 }

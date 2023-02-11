@@ -8,7 +8,7 @@ use crate::{common::safe_html, App};
 
 pub fn attach(server: &mut Server<App>) {
     server.stateful_route(Method::GET, "/b/{id}", |app, req| {
-        let id = req.path_param("id").unwrap();
+        let id = req.param("id").unwrap();
 
         let uuid = match Uuid::parse_str(&id) {
             Ok(i) => i,

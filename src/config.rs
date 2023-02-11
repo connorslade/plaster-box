@@ -6,6 +6,7 @@ use simple_config_parser::Config as Cfg;
 pub struct Config {
     pub host: String,
     pub port: u16,
+    pub threads: usize,
 
     pub data_limit: usize,
     pub database_file: String,
@@ -18,6 +19,7 @@ impl Config {
         Self {
             host: get_config(&cfg, "host"),
             port: get_config(&cfg, "port"),
+            threads: get_config(&cfg, "threads"),
 
             data_limit: get_config(&cfg, "data_limit"),
             database_file: get_config(&cfg, "database_file"),
