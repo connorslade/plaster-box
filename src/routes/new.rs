@@ -1,6 +1,5 @@
-use afire::{Content, Method, Response, Server};
+use afire::{internal::encoding::decode_url, Content, Method, Response, Server};
 use rusqlite::params;
-use urlencoding::decode;
 use uuid::Uuid;
 
 use crate::App;
@@ -13,7 +12,7 @@ pub fn attach(server: &mut Server<App>) {
 
         let body_str = String::from_utf8_lossy(&req.body);
         let name = match req.headers.get("Name") {
-            Some(i) => decode(i).unwrap().to_string(),
+            Some(i) => decode_url(i).unwrap(),
             None => "Untitled Box".to_owned(),
         };
         let uuid = Uuid::new_v4();
