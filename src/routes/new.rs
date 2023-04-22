@@ -15,13 +15,14 @@ pub fn attach(server: &mut Server<App>) {
             Some(i) => decode_url(i).unwrap(),
             None => "Untitled Box".to_owned(),
         };
+        let hidden = req.headers.get("Hidden") == Some("true");
         let uuid = Uuid::new_v4();
 
         app.database
             .lock()
             .execute(
                 include_str!("../sql/insert_bin.sql"),
-                params![uuid.to_string(), body_str, name],
+                params![uuid.to_string(), body_str, name, hidden as u8],
             )
             .unwrap();
 

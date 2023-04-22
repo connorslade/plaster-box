@@ -1,1 +1,1 @@
-INSERT INTO bins VALUES (?, ?, ?, strftime('%s','now'))
+INSERT INTO bins VALUES (?, ?, ?, ?, strftime('%s','now'))

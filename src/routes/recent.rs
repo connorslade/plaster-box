@@ -24,7 +24,7 @@ pub fn attach(server: &mut Server<App>) {
         }
 
         let db = app.database.lock();
-        let page_count = db.query_row("SELECT Count(*) FROM bins", [], |row| row.get::<_, usize>(0)).unwrap();
+        let page_count = db.query_row("SELECT COUNT(*) FROM bins WHERE hidden = 0", [], |row| row.get::<_, usize>(0)).unwrap();
         for i in 0..=(page_count / RECENT_PAGE_ITEMS) {
             pages.push_str(&format!(
                 r#"<li><a class="pagination-link{}" aria-label="Goto page {i}" href="?page={i}">{i}</a></li>"#,
