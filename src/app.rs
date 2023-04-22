@@ -1,9 +1,9 @@
 use std::env;
 
-use parking_lot::Mutex;
+use parking_lot::{Mutex, MutexGuard};
 use rusqlite::Connection;
 
-use crate::config::Config;
+use crate::{config::Config, database::Database};
 
 pub struct App {
     pub config: Config,
@@ -19,14 +19,15 @@ impl App {
         let cfg = Config::new(cfg_path);
 
         let db = Connection::open(&cfg.database_file).unwrap();
-        db.pragma_update(None, "journal_mode", "WAL").unwrap();
-        db.pragma_update(None, "synchronous", "NORMAL").unwrap();
-        db.execute(include_str!("./sql/create_bins.sql"), [])
-            .unwrap();
+        db.init().unwrap();
 
         Self {
             config: cfg,
             database: Mutex::new(db),
         }
+    }
+
+    pub fn db(&self) -> MutexGuard<Connection> {
+        self.database.lock()
     }
 }

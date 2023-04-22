@@ -1,10 +1,9 @@
 use std::fs;
 
 use afire::{Content, Method, Response, Server};
-use rusqlite::Error;
 use uuid::Uuid;
 
-use crate::{common::safe_html, App};
+use crate::{common::safe_html, database::Database, App};
 
 pub fn attach(server: &mut Server<App>) {
     server.stateful_route(Method::GET, "/b/{id}", |app, req| {
@@ -15,31 +14,27 @@ pub fn attach(server: &mut Server<App>) {
             Err(_) => return Response::new().status(400).text("Invalid UUID"),
         };
 
-        let (data, name) = match app.database.lock().query_row(
-            "SELECT data, name FROM bins WHERE uuid = ?",
-            [uuid.to_string()],
-            |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
-        ) {
-            Ok(i) => i,
-            Err(Error::QueryReturnedNoRows) => {
+        let bin = match app.db().get_bin(uuid) {
+            Ok(Some(i)) => i,
+            Ok(None) => {
                 return Response::new()
                     .status(404)
                     .text("Bin not Found")
                     .content(Content::TXT)
             }
-            Err(e) => panic!("{}", e),
+            Err(e) => panic!("{e}"),
         };
 
         let mut code_blocks = String::new();
-        for i in safe_html(&data).lines() {
+        for i in safe_html(&bin.body).lines() {
             code_blocks.push_str(&format!("<code>{i}</code>"));
         }
 
         let template = fs::read_to_string("web/template/box.html")
             .unwrap()
-            .replace("{{DATA}}", &code_blocks)
-            .replace("{{NAME}}", &safe_html(&name))
-            .replace("{{ID}}", uuid.to_string().as_str());
+            .replacen("{{DATA}}", &code_blocks, 1)
+            .replacen("{{NAME}}", &safe_html(&bin.name), 1)
+            .replacen("{{ID}}", uuid.to_string().as_str(), 2);
 
         Response::new().text(template).content(Content::HTML)
     });

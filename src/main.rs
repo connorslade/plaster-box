@@ -11,8 +11,11 @@ use afire::{
 mod app;
 mod common;
 mod config;
+mod database;
 mod routes;
 use app::App;
+
+use crate::database::Database;
 
 fn main() {
     set_log_level(Level::Trace);
@@ -29,14 +32,10 @@ fn main() {
         .default_header("X-Server", format!("afire/{}", afire::VERSION))
         .socket_timeout(Duration::from_secs(5));
 
-    let error_app = server.state.as_ref().unwrap().clone();
+    let end_app = server.state.as_ref().unwrap().clone();
     ctrlc::set_handler(move || {
         trace!("Saving database");
-        error_app
-            .database
-            .lock()
-            .pragma_update(None, "wal_checkpoint", "TRUNCATE")
-            .unwrap();
+        end_app.db().cleanup().unwrap();
         process::exit(0);
     })
     .unwrap();

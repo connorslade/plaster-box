@@ -12,3 +12,4 @@ simple_config_parser = "1.0.0"
 rusqlite = { version = "0.28.0", features = ["bundled"] }
 parking_lot = "0.12.1"
 unidecode = "0.3.0"
+anyhow = "1.0.70"

@@ -1,8 +1,8 @@
-use afire::{internal::encoding::decode_url, Content, Method, Response, Server};
-use rusqlite::params;
-use uuid::Uuid;
+use std::borrow::Borrow;
 
-use crate::App;
+use afire::{internal::encoding::decode_url, Content, Method, Response, Server};
+
+use crate::{database::Database, App};
 
 pub fn attach(server: &mut Server<App>) {
     server.stateful_route(Method::POST, "/new", |app, req| {
@@ -16,14 +16,9 @@ pub fn attach(server: &mut Server<App>) {
             None => "Untitled Box".to_owned(),
         };
         let hidden = req.headers.get("Hidden") == Some("true");
-        let uuid = Uuid::new_v4();
-
-        app.database
-            .lock()
-            .execute(
-                include_str!("../sql/insert_bin.sql"),
-                params![uuid.to_string(), body_str, name, hidden as u8],
-            )
+        let uuid = app
+            .db()
+            .create_bin(&name, body_str.borrow(), hidden)
             .unwrap();
 
         Response::new().text(uuid).content(Content::TXT)
