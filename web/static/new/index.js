@@ -15,6 +15,7 @@ let data = {
       body: data.text.value,
       headers: {
         Name: encodeURIComponent(data.name.value ?? "Unnamed Box"),
+        Hidden: data.hidden.checked ? "true" : "false",
         "Content-Type": "text/plain; charset=UTF-16",
       },
     })
@@ -31,7 +32,7 @@ function err(e, time) {
   document.querySelector("#submit").classList.remove("is-loading");
   bulmaToast.toast({
     message: e.toString(),
-    duration: time || 5000,
+    duration: time ?? 5000,
     type: "is-danger",
     dismissible: true,
     animate: { in: "fadeIn", out: "fadeOut" },
