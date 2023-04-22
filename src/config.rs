@@ -29,5 +29,5 @@ impl Config {
 
 fn get_config<T: FromStr>(cfg: &Cfg, name: &str) -> T {
     cfg.get(name)
-        .unwrap_or_else(|_| panic!("Error getting `{}` from Config", name))
+        .unwrap_or_else(|_| panic!("Error getting `{name}` from Config"))
 }

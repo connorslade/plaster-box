@@ -32,7 +32,7 @@ pub fn attach(server: &mut Server<App>) {
 
         let mut code_blocks = String::new();
         for i in safe_html(&data).lines() {
-            code_blocks.push_str(&format!("<code>{}</code>", i));
+            code_blocks.push_str(&format!("<code>{i}</code>"));
         }
 
         let template = fs::read_to_string("web/template/box.html")
